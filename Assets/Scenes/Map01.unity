@@ -561,7 +561,10 @@ MonoBehaviour:
   move_right: 0
   move_up: 0
   move_down: 0
-  is_jumping: 0
   x_pos: 0
   y_pos: 0
   movement_speed: 5
+  is_jumping: 0
+  is_falling: 0
+  jump_y: 0
+  max_ground_distance: 0
