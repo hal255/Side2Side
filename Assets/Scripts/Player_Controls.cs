@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Player_Controls : MonoBehaviour {
 
+    bool debug = true;
+
     public Camera player_cam;
     public bool move_left = false;
     public bool move_right = false;
@@ -19,6 +21,9 @@ public class Player_Controls : MonoBehaviour {
     public bool is_falling = true;
     public float jump_y = 0.0f;
     public float max_ground_distance;
+    public float prev_height = 0.0f;
+    public float curr_height = 0.0f;
+    public float max_height_diff;
 
     // Use this for initialization
     void Start () {
@@ -28,7 +33,8 @@ public class Player_Controls : MonoBehaviour {
             Camera cam = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>();
             setCamera(cam);
         }
-        max_ground_distance = 0.05f;
+        max_ground_distance = 0.1f;
+        max_height_diff = 0.001f;
     }
 	
 	// Update is called once per frame
@@ -47,14 +53,11 @@ public class Player_Controls : MonoBehaviour {
 
         // jump up
         if (Input.GetKeyDown(KeyCode.Space))
-        {
             is_jumping = true;
-            is_falling = true;
-        }
         if (Input.GetKeyUp(KeyCode.Space))
             is_jumping = false;
 
-        //checkInAir();
+        is_falling = checkIsFalling();
         moveLeft();
         moveRight();
         jumpUp();
@@ -82,7 +85,6 @@ public class Player_Controls : MonoBehaviour {
         {
             Vector2 new_pos = new Vector2(x_pos - 1.0f, y_pos) * movement_speed * Time.deltaTime;
             gameObject.transform.Translate(new_pos);
-            player_cam.gameObject.transform.Translate(new_pos);
         }
     }
 
@@ -92,7 +94,6 @@ public class Player_Controls : MonoBehaviour {
         {
             Vector2 new_pos = new Vector2(x_pos + 1.0f, y_pos) * movement_speed * Time.deltaTime;
             gameObject.transform.Translate(new_pos);
-            player_cam.gameObject.transform.Translate(new_pos);
         }
     }
 
@@ -109,10 +110,11 @@ public class Player_Controls : MonoBehaviour {
     public void jumpUp()
     {
         // adjust gravity if jumping
-        if (is_jumping && !is_falling)
+        if (is_jumping)
         {
-            gameObject.GetComponent<Rigidbody2D>().gravityScale = -30;
             is_jumping = false;
+            if (!is_falling)
+                gameObject.GetComponent<Rigidbody2D>().gravityScale = -30;
         }
         // else, let gravity handle the falling
         else
@@ -122,5 +124,16 @@ public class Player_Controls : MonoBehaviour {
     public void setCamera(Camera cam)
     {
         player_cam = cam;
+    }
+
+    public bool checkIsFalling()
+    {
+        curr_height = transform.position.y;
+        float height_diff = Mathf.Abs(curr_height - prev_height);
+        if (height_diff <= max_height_diff)
+            return false;
+
+        prev_height = curr_height;
+        return true;
     }
 }

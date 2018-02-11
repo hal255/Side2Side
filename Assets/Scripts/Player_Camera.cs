@@ -4,13 +4,22 @@ using UnityEngine;
 
 public class Player_Camera : MonoBehaviour {
 
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+    [SerializeField] private Transform target;
+
+    public float rotSpeed = 1.5f;
+
+    private Vector3 _offset;
+
+    // Use this for initialization
+    void Start()
+    {
+        _offset = target.position - transform.position;
+    }
+
+    // Update is called once per frame
+    void LateUpdate()
+    {
+        transform.position = target.position - _offset;
+        transform.LookAt(target);
+    }
 }
