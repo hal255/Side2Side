@@ -49,6 +49,7 @@ public class Player_Controls : MonoBehaviour {
         if (Input.GetKeyDown(KeyCode.Space))
             jumpUp();
 
+        // TODO: fix jumping
         isInAir();
         moveLeft();
         moveRight();
