@@ -6,7 +6,6 @@ public class Player_Controls : MonoBehaviour {
 
     bool debug = true;
 
-    public Camera player_cam;
     public bool move_left = false;
     public bool move_right = false;
     public bool move_up = false;
@@ -18,21 +17,16 @@ public class Player_Controls : MonoBehaviour {
 
     // jumping variables
     public bool is_jumping = false;
-    public bool is_falling = true;
-    public float jump_y = 0.0f;
+    public bool is_in_air = true;
     public float max_ground_distance;
     public float prev_height = 0.0f;
     public float curr_height = 0.0f;
     public float max_height_diff;
+    public float jump_speed = 0.1f;
+    public float max_jump_height = -30.0f;
 
     // Use this for initialization
     void Start () {
-        // if no player cam is linked, then assign default one
-		if (!player_cam)
-        {
-            Camera cam = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>();
-            setCamera(cam);
-        }
         max_ground_distance = 0.1f;
         max_height_diff = 0.001f;
     }
@@ -53,27 +47,24 @@ public class Player_Controls : MonoBehaviour {
 
         // jump up
         if (Input.GetKeyDown(KeyCode.Space))
-            is_jumping = true;
-        if (Input.GetKeyUp(KeyCode.Space))
-            is_jumping = false;
+            jumpUp();
 
-        is_falling = checkIsFalling();
+        isInAir();
         moveLeft();
         moveRight();
-        jumpUp();
     }
 
     // handles when character lands on something
     private void FixedUpdate()
     {
-        if (is_falling)
+        if (is_in_air)
         {
             Vector2 feet_pos = new Vector2(transform.position.x, transform.position.y - 0.98f);
             RaycastHit2D hit = Physics2D.Raycast(feet_pos, Vector2.down, max_ground_distance);
             if (hit)
             {
                 Debug.Log("Hit: " + hit.collider.name + ", distance: " + hit.distance);
-                is_falling = false;
+                is_in_air = false;
             }
         }
 
@@ -109,31 +100,26 @@ public class Player_Controls : MonoBehaviour {
 
     public void jumpUp()
     {
-        // adjust gravity if jumping
-        if (is_jumping)
+        if (!is_jumping)
         {
-            is_jumping = false;
-            if (!is_falling)
-                gameObject.GetComponent<Rigidbody2D>().gravityScale = -30;
+            is_jumping = true;
+            gameObject.GetComponent<Rigidbody2D>().gravityScale = max_jump_height;
         }
-        // else, let gravity handle the falling
-        else
-            gameObject.GetComponent<Rigidbody2D>().gravityScale = 1;
+        StartCoroutine(WaitForJump());
     }
 
-    public void setCamera(Camera cam)
-    {
-        player_cam = cam;
-    }
-
-    public bool checkIsFalling()
+    public void isInAir()
     {
         curr_height = transform.position.y;
         float height_diff = Mathf.Abs(curr_height - prev_height);
-        if (height_diff <= max_height_diff)
-            return false;
-
+        is_in_air = (height_diff <= max_height_diff) ? false : true;
+        is_jumping = is_in_air;
         prev_height = curr_height;
-        return true;
+    }
+
+    private IEnumerator WaitForJump()
+    {
+        yield return new WaitForSeconds(jump_speed);
+        gameObject.GetComponent<Rigidbody2D>().gravityScale = 1;
     }
 }

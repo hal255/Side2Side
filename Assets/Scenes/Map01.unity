@@ -570,7 +570,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 09a30a7cdc735aa4290b3bbc0995f088, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player_cam: {fileID: 0}
   move_left: 0
   move_right: 0
   move_up: 0
@@ -579,9 +578,10 @@ MonoBehaviour:
   y_pos: 0
   movement_speed: 5
   is_jumping: 0
-  is_falling: 0
-  jump_y: 0
+  is_in_air: 1
   max_ground_distance: 0
   prev_height: 0
   curr_height: 0
   max_height_diff: 0
+  jump_speed: 0.1
+  max_jump_height: -5
