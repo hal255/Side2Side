@@ -10,6 +10,7 @@ public class Player_Controls : MonoBehaviour {
     public bool move_right = false;
     public bool move_up = false;
     public bool move_down = false;
+    public bool face_left = false;
 
     public float x_pos = 0.0f;
     public float y_pos = 0.0f;
@@ -77,6 +78,7 @@ public class Player_Controls : MonoBehaviour {
         {
             Vector2 new_pos = new Vector2(x_pos - 1.0f, y_pos) * movement_speed * Time.deltaTime;
             gameObject.transform.Translate(new_pos);
+            gameObject.GetComponent<SpriteRenderer>().flipX = true;
         }
     }
 
@@ -86,6 +88,7 @@ public class Player_Controls : MonoBehaviour {
         {
             Vector2 new_pos = new Vector2(x_pos + 1.0f, y_pos) * movement_speed * Time.deltaTime;
             gameObject.transform.Translate(new_pos);
+            gameObject.GetComponent<SpriteRenderer>().flipX = false;
         }
     }
 
